@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chùa Online 3D</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cloudflare.com"></script>
+</head>
+<body>
+    <div id="instructions">
+        <b>ĐIỀU KHIỂN NHÂN VẬT (3D):</b><br>
+        - Phím <b>W, A, S, D</b> hoặc mũi tên để di chuyển.<br>
+        - Giữ chuột trái và kéo để quay camera nhìn xung quanh vườn.
+    </div>
+
+    <div id="canvas-container"></div>
+
+    <div class="ui-panel">
+        <button onclick="toggleMusic()">🎵 Nhạc Thiền</button>
+        <button onclick="thapHuong()">🪔 Thắp Hương</button>
+        <button onclick="openPrayer()">🙏 Khấn Nguyện</button>
+        <button onclick="goChuong()">🔔 Thỉnh Chuông</button>
+    </div>
+
+    <div id="prayer-modal">
+        <h3>Gửi Lời Nguyện Ước</h3>
+        <textarea id="prayer-text" placeholder="Viết những điều bình an bạn muốn cầu nguyện tại đây..."></textarea>
+        <br>
+        <button onclick="sendPrayer()">Thả Đèn Hoa Đăng</button>
+        <button onclick="closePrayer()" style="background:#666; margin-top:5px;">Đóng</button>
+    </div>
+
+    <audio id="bg-music" loop src="https://soundhelix.com"></audio>
+    <audio id="bell-sound" src="https://google.com"></audio>
+
+    <script src="script.js"></script>
+</body>
+</html>
