@@ -1,13 +1,13 @@
 let scene, camera, renderer, player, incenseSmoke = null;
 let moveForward = false, moveBackward = false, moveLeft = false, moveRight = false;
 let isMusicPlaying = false;
-let streamWater;
+let streamWater; // Biến điều khiển dòng suối chuyển động
 
 function init3D() {
     const container = document.getElementById('canvas-container');
     scene = new THREE.Scene();
-    scene.background = new THREE.Color(0xb2daf2);
-    scene.fog = new THREE.FogExp2(0xb2daf2, 0.012);
+    scene.background = new THREE.Color(0xb2daf2); // Màu bầu trời sáng trong lành
+    scene.fog = new THREE.FogExp2(0xb2daf2, 0.012); // Sương mù mờ ảo vùng núi
 
     camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
     camera.position.set(0, 5, 15);
@@ -16,21 +16,25 @@ function init3D() {
     renderer.setSize(window.innerWidth, window.innerHeight);
     container.appendChild(renderer.domElement);
 
+    // Ánh sáng tự nhiên
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
     scene.add(ambientLight);
     const sunLight = new THREE.DirectionalLight(0xfffaed, 0.9);
     sunLight.position.set(30, 40, 20);
     scene.add(sunLight);
 
+    // 1. TẠO NỀN ĐẤT / THẢM CỎ VƯỜN CHÙA
     const floorGeo = new THREE.PlaneGeometry(150, 150);
-    const floorMat = new THREE.MeshLambertMaterial({ color: 0x486b32 });
+    const floorMat = new THREE.MeshLambertMaterial({ color: 0x486b32 }); // Màu cỏ rừng nguyên sinh
     const floor = new THREE.Mesh(floorGeo, floorMat);
     floor.rotation.x = -Math.PI / 2;
     scene.add(floor);
 
+    // 2. TẠO DÃY NÚI RỪNG BAO QUANH CHÙA
     const mountainGeo = new THREE.ConeGeometry(25, 45, 5);
-    const mountainMat = new THREE.MeshLambertMaterial({ color: 0x3d5236 });
+    const mountainMat = new THREE.MeshLambertMaterial({ color: 0x3d5236 }); // Màu núi xanh đậm
     
+    // Đặt 6 ngọn núi bao quanh phía sau ngôi chùa
     const mPositions = [
         [-50, 15, -50], [-25, 15, -60], [0, 20, -65], 
         [25, 15, -60], [50, 15, -50], [-60, 10, -20]
@@ -43,22 +47,27 @@ function init3D() {
         scene.add(mountain);
     });
 
+    // 3. TẠO DÒNG SUỐI CHẢY QUA CẠNH CHÙA
     const streamGeo = new THREE.BoxGeometry(8, 0.1, 150);
     const streamMat = new THREE.MeshLambertMaterial({ color: 0x4ca6a4, transparent: true, opacity: 0.85 });
     streamWater = new THREE.Mesh(streamGeo, streamMat);
-    streamWater.position.set(22, 0.05, 0);
+    streamWater.position.set(22, 0.05, 0); // Nằm bên phải ngôi chùa 22 mét
     scene.add(streamWater);
 
+    // 4. TRỒNG RỪNG CÂY (Cây cổ thụ, tùng, bách)
     function createTree(x, z) {
         const treeGroup = new THREE.Group();
+        
+        // Thân cây
         const trunkGeo = new THREE.CylinderGeometry(0.2, 0.4, 2.5, 8);
         const trunkMat = new THREE.MeshLambertMaterial({ color: 0x5a3d28 });
         const trunk = new THREE.Mesh(trunkGeo, trunkMat);
         trunk.position.y = 1.25;
         treeGroup.add(trunk);
 
+        // Tán lá cây
         const leavesGeo = new THREE.ConeGeometry(1.8, 3.5, 8);
-        const leavesMat = new THREE.MeshLambertMaterial({ color: 0x224d17 });
+        const leavesMat = new THREE.MeshLambertMaterial({ color: 0x224d17 }); // Lá xanh rậm
         const leaves = new THREE.Mesh(leavesGeo, leavesMat);
         leaves.position.y = 3.5;
         treeGroup.add(leaves);
@@ -67,32 +76,39 @@ function init3D() {
         scene.add(treeGroup);
     }
 
+    // Rải ngẫu nhiên 50 cái cây tạo thành khu rừng xung quanh suối và chân núi
     for (let i = 0; i < 50; i++) {
         let x = (Math.random() - 0.5) * 120;
         let z = (Math.random() - 0.5) * 120;
+        
+        // Tránh trồng cây đè lên Chánh điện và lòng suối
         if (Math.abs(x) > 12 && Math.abs(x - 22) > 6 && z < 20) {
             createTree(x, z);
         }
     }
 
+    // 5. NGÔI CHÙA CỔ KÍNH CHÍNH ĐIỆN
     const templeGeo = new THREE.BoxGeometry(12, 8, 12);
     const templeMat = new THREE.MeshLambertMaterial({ color: 0x7c3f22 });
     const temple = new THREE.Mesh(templeGeo, templeMat);
     temple.position.set(0, 4, -15);
     scene.add(temple);
 
+    // Tượng Phật vàng phát sáng
     const buddhaGeo = new THREE.CylinderGeometry(1, 1.5, 3, 8);
     const buddhaMat = new THREE.MeshBasicMaterial({ color: 0xffd700 });
     const buddha = new THREE.Mesh(buddhaGeo, buddhaMat);
     buddha.position.set(0, 3, -14);
     scene.add(buddha);
 
+    // Lư Hương trước thềm
     const potGeo = new THREE.CylinderGeometry(0.8, 0.5, 1, 16);
     const potMat = new THREE.MeshLambertMaterial({ color: 0x3a3a3a });
     const pot = new THREE.Mesh(potGeo, potMat);
     pot.position.set(0, 0.5, -6);
     scene.add(pot);
 
+    // Nhân vật người đi chùa (Khối Capsule màu xanh)
     const playerGeo = new THREE.CapsuleGeometry(0.5, 1, 4, 8);
     const playerMat = new THREE.MeshLambertMaterial({ color: 0x2b5797 });
     player = new THREE.Mesh(playerGeo, playerMat);
@@ -129,6 +145,7 @@ function animate() {
     camera.position.set(player.position.x, player.position.y + 4, player.position.z + 8);
     camera.lookAt(player.position);
 
+    // Hiệu ứng nước suối chảy gợn sóng lăn tăn nhẹ
     if (streamWater) {
         streamWater.position.x = 22 + Math.sin(Date.now() * 0.003) * 0.05;
     }
